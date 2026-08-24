@@ -46,8 +46,16 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationRoutes);
 
 // Serve Client Build in Production / Standalone mode
-const clientDistPath = path.join(__dirname, '../../client/dist');
-if (fs.existsSync(clientDistPath)) {
+const candidatePaths = [
+  path.join(__dirname, '../../client/dist'),
+  path.join(process.cwd(), 'client/dist'),
+  path.join(process.cwd(), '../client/dist'),
+  path.join(__dirname, '../client/dist'),
+];
+const clientDistPath = candidatePaths.find((p) => fs.existsSync(p));
+
+if (clientDistPath) {
+  console.log(`[Server] 🌐 Serving client SPA from: ${clientDistPath}`);
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api')) return next();
@@ -64,7 +72,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server & Background Cron Jobs
-app.listen(PORT, () => {
-  console.log(`🚀 NexusCare Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 NexusCare Server running on port ${PORT}`);
   initCronJobs();
 });

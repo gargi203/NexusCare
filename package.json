@@ -5,7 +5,8 @@
   "description": "Fullstack Healthcare Appointment & Follow-up Manager with AI triage, concurrency control, and Google Calendar sync",
   "scripts": {
     "install:all": "npm --prefix server install && npm --prefix client install",
-    "server": "npm --prefix server run dev",
+    "server": "node server/src/server.js",
+    "start": "node server/src/server.js",
     "client": "npm --prefix client run dev",
     "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "db:setup": "npm --prefix server run db:setup",
