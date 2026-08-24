@@ -4,6 +4,15 @@
 
 ---
 
+## 🌐 Live Application & Links
+
+- 🚀 **Live Hosted Application**: **[https://nexuscare.onrender.com](https://nexuscare.onrender.com)**
+- 📦 **GitHub Repository**: **[https://github.com/gargi203/NexusCare](https://github.com/gargi203/NexusCare)**
+- 📝 **System Design Document**: [`SYSTEM_DESIGN.md`](./SYSTEM_DESIGN.md)
+- 💾 **Source Code Archive**: [`healthcare-appointment-manager.zip`](./healthcare-appointment-manager.zip)
+
+---
+
 ## 📑 Table of Contents
 1. [Overview & Key Features](#-overview--key-features)
 2. [Tech Stack](#-tech-stack)
@@ -86,8 +95,9 @@ NexusCare is designed to modernize clinical workflows by eliminating double-book
 
 ### 1. Clone & Install Dependencies
 ```bash
-# Navigate to project directory
-cd healthcare-appointment-manager
+# Clone repository
+git clone https://github.com/gargi203/NexusCare.git
+cd NexusCare
 
 # Install dependencies for both server and client
 npm run install:all
@@ -100,7 +110,7 @@ npm run db:setup
 ```
 
 ### 3. Start Fullstack Application
-Run the backend Express API and Vite React client concurrently:
+Run the backend Express API (Port 5050) and Vite React client (Port 5175) concurrently:
 ```bash
 npm run dev
 ```
@@ -124,7 +134,7 @@ You can log in with any of the following accounts (Password: `Password123!`):
 | **Doctor** | Dr. Elena Rostova | `dr.rostova@nexuscare.clinic` | General Medicine & Triage, Acute care follow-ups |
 | **Clinic Admin** | Dr. Arthur Vance | `admin@nexuscare.clinic` | Doctor roster setup, Working hours, Leave day declaration & conflict audits |
 
-> 💡 **Tip**: Use the **"Switch Persona"** menu in the top-right header for instant 1-click account switching without typing passwords!
+> 💡 **Tip**: Use the **"Switch Persona"** menu in the top-right header on the live app for instant 1-click account switching without typing passwords!
 
 ---
 
@@ -492,17 +502,21 @@ node test-system.js
 
 ## 🌐 Production Deployment Guide
 
-### Deploying Backend (Render / Railway / Fly.io)
-1. Set the **Root Directory** to `server/`.
-2. **Build Command**: `npm install && npx prisma generate && npx prisma db push`
-3. **Start Command**: `node src/server.js`
-4. Set environment variables (`DATABASE_URL`, `JWT_SECRET`, `CLIENT_URL`, etc.).
+### Deploying on Render (Unified Fullstack Web Service)
+1. In Render, select **New +** $\rightarrow$ **Web Service**.
+2. Connect your GitHub repository: `gargi203/NexusCare`.
+3. Set:
+   - **Runtime**: `Node`
+   - **Build Command**: `npm run install:all && npm run build && npm run db:setup`
+   - **Start Command**: `npm run server`
+   - **Instance Type**: `Free`
+4. Click **Deploy Web Service**.
 
-### Deploying Frontend (Vercel / Netlify / Render Static)
-1. Set the **Root Directory** to `client/`.
-2. **Build Command**: `npm run build`
-3. **Publish Directory**: `dist`
-4. Set environment variable: `VITE_API_URL=https://your-backend-api-domain.com`
+### Deploying Frontend on Vercel
+1. Go to [vercel.com/new](https://vercel.com/new) and import `gargi203/NexusCare`.
+2. Set **Root Directory** to `client`.
+3. Set **Framework Preset** to `Vite`.
+4. Click **Deploy**.
 
 ---
 
