@@ -14,11 +14,11 @@ const getAllDoctors = async (req, res) => {
       };
     }
 
-    if (search) {
+    if (search && search.trim()) {
       whereClause.OR = [
-        { specialization: { contains: search } },
-        { user: { name: { contains: search } } },
-        { bio: { contains: search } },
+        { specialization: { contains: search.trim() } },
+        { user: { name: { contains: search.trim() } } },
+        { bio: { contains: search.trim() } },
       ];
     }
 
@@ -42,7 +42,7 @@ const getAllDoctors = async (req, res) => {
     return res.json({ doctors });
   } catch (error) {
     console.error('[DoctorController:getAllDoctors]', error);
-    return res.status(500).json({ error: 'Failed to fetch doctors' });
+    return res.status(500).json({ error: error.message || 'Failed to fetch doctors' });
   }
 };
 

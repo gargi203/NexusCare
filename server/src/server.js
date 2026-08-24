@@ -3,8 +3,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
+const { execSync } = require('child_process');
 
 dotenv.config();
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = 'file:./dev.db';
+}
 
 const prisma = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -73,22 +77,41 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Auto-seed database if empty on startup
-const autoSeedIfEmpty = async () => {
+// Auto-sync SQLite schema & seed database if empty on startup
+const autoSyncAndSeed = async () => {
+  const serverDir = path.join(__dirname, '..');
   try {
+    console.log('[Server] 🛠️ Ensuring database schema is synced...');
+    try {
+      execSync('npx prisma db push --accept-data-loss', {
+        cwd: serverDir,
+        env: { ...process.env },
+        stdio: 'inherit',
+      });
+    } catch (e) {
+      console.warn('[Server] Notice on schema push:', e.message);
+    }
+
     const doctorCount = await prisma.doctorProfile.count();
     if (doctorCount === 0) {
       console.log('[Server] 📦 Empty database detected. Auto-seeding clinical records...');
       await seedDatabase();
+    } else {
+      console.log(`[Server] ✅ Database ready with ${doctorCount} doctor profiles.`);
     }
   } catch (err) {
-    console.warn('[Server] Auto-seed check notice:', err.message);
+    console.warn('[Server] Auto-seed check fallback:', err.message);
+    try {
+      await seedDatabase();
+    } catch (sErr) {
+      console.error('[Server] Critical seed error:', sErr.message);
+    }
   }
 };
 
 // Start Server & Background Cron Jobs
 app.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 NexusCare Server running on port ${PORT}`);
-  await autoSeedIfEmpty();
+  await autoSyncAndSeed();
   initCronJobs();
 });
