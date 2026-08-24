@@ -21,10 +21,10 @@
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^6.9.15",
+    "prisma": "^5.19.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4",
-    "prisma": "^5.19.1"
+    "nodemon": "^3.1.4"
   }
 }
