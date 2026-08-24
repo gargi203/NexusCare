@@ -3,18 +3,18 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function seedDatabase() {
   console.log('🌱 Starting database seeding for Healthcare Appointment Manager...');
 
   // Clean existing tables
-  await prisma.notificationLog.deleteMany();
-  await prisma.medicationReminder.deleteMany();
-  await prisma.prescription.deleteMany();
-  await prisma.slotHold.deleteMany();
-  await prisma.appointment.deleteMany();
-  await prisma.leaveDay.deleteMany();
-  await prisma.doctorProfile.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.notificationLog.deleteMany().catch(() => {});
+  await prisma.medicationReminder.deleteMany().catch(() => {});
+  await prisma.prescription.deleteMany().catch(() => {});
+  await prisma.slotHold.deleteMany().catch(() => {});
+  await prisma.appointment.deleteMany().catch(() => {});
+  await prisma.leaveDay.deleteMany().catch(() => {});
+  await prisma.doctorProfile.deleteMany().catch(() => {});
+  await prisma.user.deleteMany().catch(() => {});
 
   const defaultPassword = await bcrypt.hash('Password123!', 10);
 
@@ -144,12 +144,10 @@ async function main() {
 
   // 5. Create Sample Appointments
   const todayStr = new Date().toISOString().split('T')[0];
-
   const nextDay = new Date();
   nextDay.setDate(nextDay.getDate() + 1);
   const nextDayStr = nextDay.toISOString().split('T')[0];
 
-  // Appointment 1: Confirmed with Pre-visit AI summary
   const apt1 = await prisma.appointment.create({
     data: {
       appointmentCode: 'NX-260824-CARD',
@@ -176,7 +174,6 @@ async function main() {
     },
   });
 
-  // Appointment 2: Completed with Doctor Notes & Post-visit AI summary & Prescriptions
   const apt2 = await prisma.appointment.create({
     data: {
       appointmentCode: 'NX-260824-GENM',
@@ -231,7 +228,6 @@ async function main() {
     },
   });
 
-  // Add Prescriptions for Apt 2
   const rx1 = await prisma.prescription.create({
     data: {
       appointmentId: apt2.id,
@@ -254,7 +250,6 @@ async function main() {
     },
   });
 
-  // Create Medication Reminders
   await prisma.medicationReminder.create({
     data: {
       prescriptionId: rx1.id,
@@ -269,7 +264,6 @@ async function main() {
     },
   });
 
-  // Create Sample Notification Logs
   await prisma.notificationLog.create({
     data: {
       recipientEmail: patient1.email,
@@ -282,33 +276,13 @@ async function main() {
     },
   });
 
-  await prisma.notificationLog.create({
-    data: {
-      recipientEmail: patient2.email,
-      recipientName: patient2.name,
-      recipientRole: 'PATIENT',
-      type: 'MEDICATION_REMINDER',
-      subject: 'Medication Reminder: Amoxicillin (500mg)',
-      content: 'Scheduled morning dose reminder.',
-      status: 'SENT',
-    },
-  });
-
   console.log('✅ Seeding complete!');
-  console.log('----------------------------------------------------');
-  console.log('Admin Account:   admin@nexuscare.clinic   (Password123!)');
-  console.log('Doctor Account:  dr.jenkins@nexuscare.clinic (Password123!)');
-  console.log('Doctor Account:  dr.chen@nexuscare.clinic   (Password123!)');
-  console.log('Patient Account: alex.morgan@example.com (Password123!)');
-  console.log('Patient Account: david.miller@example.com (Password123!)');
-  console.log('----------------------------------------------------');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Seeding error:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+module.exports = { seedDatabase };
+
+if (require.main === module) {
+  seedDatabase()
+    .catch((e) => console.error(e))
+    .finally(() => prisma.$disconnect());
+}
